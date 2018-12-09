@@ -1,0 +1,3 @@
+[submodule "Assets/Proto"]
+	path = Assets/Proto
+	url = git@bitbucket.org:bgjinc/quiz-proto.git
