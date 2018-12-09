@@ -1,6 +1,3 @@
-[submodule "Assets/Proto"]
-	path = Assets/Proto
-	url = git@bitbucket.org:bgjinc/quiz-proto.git
 [submodule "proto"]
 	path = proto
 	url = git@bitbucket.org:bgjinc/quiz-proto.git
