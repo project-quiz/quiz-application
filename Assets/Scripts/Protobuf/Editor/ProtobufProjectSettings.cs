@@ -9,11 +9,10 @@ public class ProtobufProjectSettings : ScriptableObject
     [Serializable]
     public struct PathInfo
     {
-        public string Path { get { return path; } }
-        [SerializeField] private string path;
-        public bool IsFile { get { return isFile; } }
-        [SerializeField] private bool isFile;
+        [SerializeField] public string Path;
+        [SerializeField] public bool IsFile;
     }
 
-    [SerializeField] private PathInfo[] pathInfos;
+    [SerializeField] public string OutputPath;
+    [SerializeField] public PathInfo[] PathInfos;
 }

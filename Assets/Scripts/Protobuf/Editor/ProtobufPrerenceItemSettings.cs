@@ -13,18 +13,23 @@ public class ProtobufPrerenceItemSettings
     [PreferenceItem("Protobuf Settings")]
     public static void PreferencesGUI()
     {
+        DrawExecutablePath("Protoc Executable Path", "", "exe", EDITOR_PREF_PROTOC_EXECUTABLE_PATH, true);
+    }
+
+    private static void DrawExecutablePath(string title, string folder, string extention, string prefKey, bool isFile)
+    {
         GUILayout.BeginHorizontal();
-        EditorGUILayout.TextField("Protoc Executable Path", ProtocExecutablePath);
-        if(GUILayout.Button("Select Path", GUILayout.Width(150)))
+        EditorGUILayout.TextField(title, EditorPrefs.GetString(prefKey));
+        if (GUILayout.Button("Select Path", GUILayout.Width(150)))
         {
-            SelectPath();
+            SelectPath(title, folder, extention, prefKey, isFile);
         }
         GUILayout.EndHorizontal();
     }
 
-    private static void SelectPath()
+    private static void SelectPath(string title, string folder, string extention, string prefKey, bool isFile)
     {
-        string path = EditorUtility.OpenFilePanel("Select Protoc Executable", "", "exe");
-        EditorPrefs.SetString(EDITOR_PREF_PROTOC_EXECUTABLE_PATH, path);
+        string path = isFile ? EditorUtility.OpenFilePanel(title, folder, extention) : EditorUtility.OpenFolderPanel(title, folder, "");
+        EditorPrefs.SetString(prefKey, path);
     }
 }
