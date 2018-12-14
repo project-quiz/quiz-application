@@ -1,3 +1,6 @@
 [submodule "proto"]
 	path = proto
 	url = git@bitbucket.org:bgjinc/quiz-proto.git
+[submodule "Assets/Scripts/Data"]
+	path = Assets/Scripts/Data
+	url = git@bitbucket.org:bgjinc/quiz-c-model.git
