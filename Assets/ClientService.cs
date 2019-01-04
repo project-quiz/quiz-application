@@ -1,7 +1,9 @@
 ﻿using Data;
 using Google.Protobuf;
+using Google.Protobuf.WellKnownTypes;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -27,7 +29,7 @@ public class ClientService : IService, IDisposable
     private MainThreadService mainThreadService;
     private ProtoMessageCallbackService protoMessageCallbackService;
 
-    private object listenContext = new object();
+    private bool disposed;
 
     public ClientService(ServerSettingsLibrary serverSettingsLibrary, MainThreadService mainThreadService, ProtoMessageCallbackService protoMessageCallbackService)
     {
@@ -38,13 +40,15 @@ public class ClientService : IService, IDisposable
     
     public void ConnectAndListen()
     {
-        IPAddress localAddr = IPAddress.Parse(serverSettingsLibrary.IpAddress);
+        ServerSettingsLibrary.ServerData serverData = serverSettingsLibrary.GetCurrentServerData();
+
+        IPAddress localAddr = IPAddress.Parse(serverData.IpAddress);
         client = new TcpClient();
 
         try
         {
             //Change to the ip adress of the server.
-            client.Connect(localAddr, serverSettingsLibrary.Port);
+            client.Connect(localAddr, serverData.Port);
             Debug.Log("Connected to: " + client.Connected);
         }
         catch (SocketException ex)
@@ -77,79 +81,119 @@ public class ClientService : IService, IDisposable
         if (client.Connected)
         {
             networkStream = client.GetStream();
-            Write("HELLO THIS IS A CLIENT");
+
+            SentJoinMessage();
 
             //Start listening
             Debug.Log("Start listen thread");
-            Thread thread = new Thread(Listen);
-            thread.Start();
+            Task.Run(ListenAsync);
+        }
+
+    }
+
+    private void SentJoinMessage()
+    {
+        Welcome welcome = new Welcome();
+        welcome.Nickname = "BlackSpider";
+
+        WriteAsync(welcome);
+    }
+
+    private async void ListenAsync()
+    {
+        while (!disposed)
+        {
+            byte[] bytes = await GetMessageAsync();
+
+            if (bytes != null)
+            {
+                mainThreadService.SendToMainThread(() =>
+                {
+                    BaseMessage baseMessage = BaseMessage.Parser.ParseFrom(bytes);
+                    protoMessageCallbackService.SendBaseMessage(baseMessage);
+                });
+            }
         }
     }
 
-    private void Listen()
+    private async Task<byte[]> GetMessageAsync()
     {
-        while (true)
+        byte[] result = null;
+        try
         {
-            try
+            Byte[] receivedBytes = new byte[1024];
+
+            Debug.Log("Reading from stream");
+            int receivedAmount = await networkStream.ReadAsync(receivedBytes, 0, receivedBytes.Length);
+            result = TrimBytes(receivedBytes, receivedAmount);
+            Debug.Log($"Received data {receivedAmount}");
+        }
+        catch (ObjectDisposedException ex)
+        {
+            Debug.LogWarning("Connection lost with the server.");
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError("Exception : " + ex.ToString());
+        }
+        finally
+        {
+            if (!client.Connected)
             {
-                Byte[] receivedBytes = new byte[1024];
-
-
-
-                Debug.Log("Reading from stream");
-                int receivedAmount = networkStream.Read(receivedBytes, 0, receivedBytes.Length);
-                Debug.Log("done reading ");
-
-                if (receivedBytes.Length > 0)
+                disposed = true;
+                Debug.Log("Connection lost :(");
+                mainThreadService.SendToMainThread(() =>
                 {
-                    //amount received fits in the byte array sent message
-                    if (receivedAmount <= receivedBytes.Length)
-                    {
-                        mainThreadService.SendToMainThread(() =>
-                        {
-                            byte[] trimmedArray = new byte[receivedAmount];
-                            for (int i = 0; i < receivedAmount; i++)
-                            {
-                                trimmedArray[i] = receivedBytes[i];
-                            }
-
-                            BaseMessage baseMessage = BaseMessage.Parser.ParseFrom(trimmedArray);
-                            protoMessageCallbackService.SendBaseMessage(baseMessage);
-                        });
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError("Exception : " + ex.ToString());
-            }
-            finally
-            {
-                if (!client.Connected)
-                {
-                    Debug.Log("Connection lost :(");
-                    mainThreadService.SendToMainThread(() =>
-                    {
-                        DisconnectedEvent?.Invoke();
-                    });
-                    //TODO add reconnection to the server.
-                }
+                    DisconnectedEvent?.Invoke();
+                });
             }
         }
+        return result;
+    }
+
+    private byte[] TrimBytes(byte[] bytes, int receivedAmount)
+    {
+        //if bytes is same size as receieved skip copying.
+        if (bytes.Length == receivedAmount)
+        {
+            return bytes;
+        }
+
+        byte[] trimmedArray = new byte[receivedAmount];
+        for (int i = 0; i < receivedAmount; i++)
+        {
+            trimmedArray[i] = bytes[i];
+        }
+        return trimmedArray;
+    }
+
+    public void WriteAsync(IMessage message)
+    {
+        Any any = Any.Pack(message);
+
+        BaseMessage baseMessage = new BaseMessage
+        {
+            Id = 1,
+            Message = any,
+        };
+
+        WriteAsync(baseMessage.ToByteArray());
     }
     
-    public void Write(string message)
+    public async void WriteAsync(byte[] bytes)
     {
+        Debug.Log("");
+
         if (client.Connected)
         {
-            //Always end in '\n' because that is the server end char.
-            Byte[] data = Encoding.ASCII.GetBytes("HELLO FROM CLIENT" + "\n");
-            networkStream.Write(data, 0, data.Length);
+            await networkStream.WriteAsync(bytes, 0, bytes.Length);
         }
     }
 
     public void Dispose()
     {
+        Debug.Log("Dispose");
+        disposed = true;
         client.Close();
     }
 }

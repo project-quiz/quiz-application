@@ -42,6 +42,7 @@ public class SImpleMainFlow : MonoBehaviour
     {
         clientService.ConnectedEvent -= OnClientConnected;
         clientService.DisconnectedEvent -= OnDisconnectedEvent;
+        clientService.Dispose();
     }
 
     private void OnPlayerJoined(PlayerJoined playerJoined)

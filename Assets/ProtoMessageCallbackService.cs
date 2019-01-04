@@ -22,7 +22,7 @@ public class ProtoMessageCallbackService : IService
 
     public void SendBaseMessage(BaseMessage baseMessage)
     {
-        Get(baseMessage.Type, baseMessage.Message);
+        //Get(baseMessage.Type, baseMessage.Message);
     }
 
     private void SendMessage<T>(T evt)
