@@ -11,10 +11,10 @@ public class QuestionService : IService
     {
         RepeatedField<Answer> repeatedField = new RepeatedField<Answer>();
 
-        Answer answer1 = new Answer { Id = 1, Text = "Answer 1" };
-        Answer answer2 = new Answer { Id = 2, Text = "Answer 2" };
-        Answer answer3 = new Answer { Id = 3, Text = "Answer 3" };
-        Answer answer4 = new Answer { Id = 4, Text = "Answer 4" };
+        Answer answer1 = new Answer { Guid = "1", Text = "Answer 1" };
+        Answer answer2 = new Answer { Guid = "2", Text = "Answer 2" };
+        Answer answer3 = new Answer { Guid = "3", Text = "Answer 3" };
+        Answer answer4 = new Answer { Guid = "4", Text = "Answer 4" };
 
         Question question = new Question();
         question.Guid = "Question 1";

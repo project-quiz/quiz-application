@@ -37,8 +37,8 @@ public class QuestionScreenUI : MonoBehaviour
         }
     }
 
-    protected void OnAnswerClicked(int id)
+    protected void OnAnswerClicked(string guid)
     {
-        Debug.Log("Sent message to server that id: '" + id + "' was pressed");
+        Debug.Log($"Sent message to server that guid: '{guid}' was pressed");
     }
 }

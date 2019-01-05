@@ -4,17 +4,17 @@ using UnityEngine.UI;
 
 public class AnswerUI : MonoBehaviour
 {
-    public delegate void AnswerClickedHandler(int id);
+    public delegate void AnswerClickedHandler(string guid);
     public event AnswerClickedHandler AnswerClickedEvent;
 
     [SerializeField] protected Button button;
     [SerializeField] protected TextMeshProUGUI text;
 
-    private int id;
+    private string guid;
 
     public void Initialize(Data.Question.Answer answer)
     {
-        id = answer.Id;
+        guid = answer.Guid;
         text.text = answer.Text;
         button.onClick.AddListener(OnButtonClicked);
     }
@@ -26,6 +26,6 @@ public class AnswerUI : MonoBehaviour
 
     private void OnButtonClicked()
     {
-        AnswerClickedEvent.Invoke(id);
+        AnswerClickedEvent.Invoke(guid);
     }
 }
