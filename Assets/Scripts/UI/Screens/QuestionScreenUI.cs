@@ -9,9 +9,9 @@ public class QuestionScreenUI : MonoBehaviour
     [SerializeField] protected TextMeshProUGUI questionText;
     [Header("Answers")]
     [SerializeField] protected RectTransform answerParent;
-    [SerializeField] protected AnswerUI answerPrefeb;
+    [SerializeField] protected AnswerViewUI answerPrefeb;
 
-    private List<AnswerUI> answers = new List<AnswerUI>();
+    private List<AnswerViewUI> answers = new List<AnswerViewUI>();
 
     protected void OnEnable()
     {
@@ -22,7 +22,7 @@ public class QuestionScreenUI : MonoBehaviour
 
         foreach (var item in question.Answers)
         {
-            AnswerUI instance = Instantiate(answerPrefeb, answerParent);
+            AnswerViewUI instance = Instantiate(answerPrefeb, answerParent);
             instance.Initialize(item);
             instance.AnswerClickedEvent += OnAnswerClicked;
             answers.Add(instance);
@@ -35,6 +35,8 @@ public class QuestionScreenUI : MonoBehaviour
         {
             Destroy(answers[i].gameObject);
         }
+
+        answers.Clear();
     }
 
     protected void OnAnswerClicked(string guid)

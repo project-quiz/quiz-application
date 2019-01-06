@@ -6,27 +6,33 @@ using UnityEngine;
 /// <summary>
 /// Temp main flow because of error in the state machines :(
 /// </summary>
-public class SImpleMainFlow : MonoBehaviour
+public partial class SImpleMainFlow : MonoBehaviour
 {
+    [SerializeField] private GameObject startScreen;
     [SerializeField] private GameObject connectingScreen;
     [SerializeField] private GameObject connectedScreen;
     [SerializeField] private GameObject disconnectedScreen;
+    [SerializeField] private GameObject questionScreen;
 
     private ClientService clientService;
     private ProtoMessageCallbackService protoMessageCallbackService;
 
-    private States currentState;
+    private ScreenStates currentScreenState;
 
-    private enum States
+    public void SwitchScreen(ScreenStates state)
     {
-        Connecting,
-        Connected,
-        Disconnected
+        currentScreenState = state;
+
+        startScreen.SetActive(currentScreenState == ScreenStates.Start);
+        connectingScreen.SetActive(currentScreenState == ScreenStates.Connecting);
+        connectedScreen.SetActive(currentScreenState == ScreenStates.Connected);
+        disconnectedScreen.SetActive(currentScreenState == ScreenStates.Disconnected);
+        questionScreen.SetActive(currentScreenState == ScreenStates.Question);
     }
 
     protected void Awake()
     {
-        SwitchScreen(States.Connecting);
+        SwitchScreen(ScreenStates.Start);
 
         protoMessageCallbackService = GlobalServiceLocator.Instance.Get<ProtoMessageCallbackService>();
         protoMessageCallbackService.Subscribe<PlayerJoined>(OnPlayerJoined);
@@ -34,8 +40,6 @@ public class SImpleMainFlow : MonoBehaviour
         clientService = GlobalServiceLocator.Instance.Get<ClientService>();
         clientService.ConnectedEvent += OnClientConnected;
         clientService.DisconnectedEvent += OnDisconnectedEvent;
-    
-        clientService.ConnectAndListen();
     }
 
     protected void OnDestroy()
@@ -47,13 +51,13 @@ public class SImpleMainFlow : MonoBehaviour
 
     private void OnPlayerJoined(PlayerJoined playerJoined)
     {
-        Debug.Log(playerJoined.Player.Guid);
+        Debug.Log("GUID: " + playerJoined.Player.Guid + " - Nickname: " + playerJoined.Player.Nickname);
     }
 
     protected void OnGUI()
     {
         GUILayout.BeginArea(new Rect(10, 10, Screen.width - 20, Screen.height - 20));
-        if (currentState == States.Disconnected)
+        if (currentScreenState == ScreenStates.Disconnected)
         {
             GUILayout.Button("Retry");
         }
@@ -62,20 +66,11 @@ public class SImpleMainFlow : MonoBehaviour
 
     private void OnDisconnectedEvent()
     {
-        SwitchScreen(States.Disconnected);
+        SwitchScreen(ScreenStates.Disconnected);
     }
 
     private void OnClientConnected()
     {
-        SwitchScreen(States.Connected);
-    }
-
-    private void SwitchScreen(States state)
-    {
-        currentState = state;
-
-        connectingScreen.SetActive(currentState == States.Connecting);
-        connectedScreen.SetActive(currentState == States.Connected);
-        disconnectedScreen.SetActive(currentState == States.Disconnected);
+        SwitchScreen(ScreenStates.Connected);
     }
 }

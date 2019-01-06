@@ -37,6 +37,11 @@ public class ClientService : IService, IDisposable
         this.mainThreadService = mainThreadService;
         this.protoMessageCallbackService = protoMessageCallbackService;
     }
+
+    public TcpClient GetClientInformation()
+    {
+        return client;
+    }
     
     public void ConnectAndListen()
     {
@@ -94,7 +99,7 @@ public class ClientService : IService, IDisposable
     private void SentJoinMessage()
     {
         Welcome welcome = new Welcome();
-        welcome.Nickname = "BlackSpider";
+        welcome.Nickname = GlobalServiceLocator.Instance.Get<PlayerService>().Nickname;
 
         WriteAsync(welcome);
     }
@@ -130,7 +135,7 @@ public class ClientService : IService, IDisposable
         }
         catch (ObjectDisposedException ex)
         {
-            Debug.LogWarning("Connection lost with the server.");
+            Debug.LogWarning("Connection lost with the server with ex:" + ex.ToString());
         }
         catch (Exception ex)
         {
@@ -182,11 +187,20 @@ public class ClientService : IService, IDisposable
     
     public async void WriteAsync(byte[] bytes)
     {
-        Debug.Log("");
+        Debug.Log("length " + bytes.Length);
+        byte[] additionalBytes = new byte[bytes.Length + 1];
+
+        for (int i = 0; i < bytes.Length; i++)
+        {
+            additionalBytes[i] = bytes[i];
+        }
+
+        Debug.Log("additionalBytes " + additionalBytes.Length);
+
 
         if (client.Connected)
         {
-            await networkStream.WriteAsync(bytes, 0, bytes.Length);
+            await networkStream.WriteAsync(additionalBytes, 0, additionalBytes.Length);
         }
     }
 
@@ -194,6 +208,9 @@ public class ClientService : IService, IDisposable
     {
         Debug.Log("Dispose");
         disposed = true;
-        client.Close();
+        if (client != null)
+        {
+            client.Close();
+        }
     }
 }

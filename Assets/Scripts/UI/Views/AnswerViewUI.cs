@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class AnswerUI : MonoBehaviour
+public class AnswerViewUI : MonoBehaviour
 {
     public delegate void AnswerClickedHandler(string guid);
     public event AnswerClickedHandler AnswerClickedEvent;
