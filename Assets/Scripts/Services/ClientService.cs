@@ -1,4 +1,4 @@
-﻿using Data;
+﻿using Model;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using System;
@@ -78,8 +78,8 @@ public class ClientService : IService, IDisposable
             }
             else
             {
-                //Connected :)
-                ConnectedEvent?.Invoke();
+                //Connected waiting for auth :)
+                ConnectedEvent();
             }
         }
 
@@ -93,15 +93,14 @@ public class ClientService : IService, IDisposable
             Debug.Log("Start listen thread");
             Task.Run(ListenAsync);
         }
-
     }
 
     private void SentJoinMessage()
     {
-        Welcome welcome = new Welcome();
-        welcome.Nickname = GlobalServiceLocator.Instance.Get<PlayerService>().Nickname;
+        PlayerJoin playerJoin = new PlayerJoin();
+        playerJoin.Nickname = GlobalServiceLocator.Instance.Get<PlayerService>().Nickname;
 
-        WriteAsync(welcome);
+        WriteAsync(playerJoin);
     }
 
     private async void ListenAsync()
@@ -187,20 +186,20 @@ public class ClientService : IService, IDisposable
     
     public async void WriteAsync(byte[] bytes)
     {
-        Debug.Log("length " + bytes.Length);
-        byte[] additionalBytes = new byte[bytes.Length + 1];
+        List<byte> modifiedBytes = new List<byte>();
 
         for (int i = 0; i < bytes.Length; i++)
         {
-            additionalBytes[i] = bytes[i];
+            modifiedBytes.Add(bytes[i]);
         }
 
-        Debug.Log("additionalBytes " + additionalBytes.Length);
-
+        modifiedBytes.AddRange(new byte[] { (byte)'[', (byte)'E', (byte)'N', (byte)'D', (byte)']'});
 
         if (client.Connected)
         {
-            await networkStream.WriteAsync(additionalBytes, 0, additionalBytes.Length);
+            Debug.Log("Sent :" + modifiedBytes.Count);
+
+            await networkStream.WriteAsync(modifiedBytes.ToArray(), 0, modifiedBytes.Count);
         }
     }
 

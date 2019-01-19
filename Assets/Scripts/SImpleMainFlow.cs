@@ -1,4 +1,4 @@
-﻿using Data;
+﻿using Model;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,6 +13,7 @@ public partial class SImpleMainFlow : MonoBehaviour
     [SerializeField] private GameObject connectedScreen;
     [SerializeField] private GameObject disconnectedScreen;
     [SerializeField] private GameObject questionScreen;
+    [SerializeField] private GameObject joinedScreen;
 
     private ClientService clientService;
     private ProtoMessageCallbackService protoMessageCallbackService;
@@ -28,6 +29,7 @@ public partial class SImpleMainFlow : MonoBehaviour
         connectedScreen.SetActive(currentScreenState == ScreenStates.Connected);
         disconnectedScreen.SetActive(currentScreenState == ScreenStates.Disconnected);
         questionScreen.SetActive(currentScreenState == ScreenStates.Question);
+        joinedScreen.SetActive(currentScreenState == ScreenStates.Joined);
     }
 
     protected void Awake()
@@ -51,7 +53,9 @@ public partial class SImpleMainFlow : MonoBehaviour
 
     private void OnPlayerJoined(PlayerJoined playerJoined)
     {
-        Debug.Log("GUID: " + playerJoined.Player.Guid + " - Nickname: " + playerJoined.Player.Nickname);
+        Debug.Log("OnPlayerJoined 1");
+
+        SwitchScreen(ScreenStates.Joined);
     }
 
     protected void OnGUI()

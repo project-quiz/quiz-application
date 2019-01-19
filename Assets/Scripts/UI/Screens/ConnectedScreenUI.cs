@@ -10,9 +10,10 @@ public class ConnectedScreenUI : MonoBehaviour
     protected void OnEnable()
     {
         ClientService clientService = GlobalServiceLocator.Instance.Get<ClientService>();
+        PlayerService playerService = GlobalServiceLocator.Instance.Get<PlayerService>();
 
         TcpClient tcpClient = clientService.GetClientInformation();
 
-        text.text = $"Connected to: {tcpClient.Client.RemoteEndPoint.ToString()}";
+        text.text = $"Connected to: {tcpClient.Client.RemoteEndPoint.ToString()}\n";
     }
 }

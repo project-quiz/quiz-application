@@ -1,4 +1,4 @@
-﻿using Data;
+﻿using Model;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using System;
@@ -54,5 +54,5 @@ public class ProtoMessageCallbackService : IService
 
 public class ProtoTypeUrl
 {
-    public const string PlayerJoined = "Data.PlayerJoined";
+    public const string PlayerJoined = "model.PlayerJoined";
 }

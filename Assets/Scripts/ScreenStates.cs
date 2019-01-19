@@ -5,5 +5,6 @@
     Connected,
     Disconnected,
     Waiting,
-    Question
+    Question,
+    Joined
 }

@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using Model;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,7 +13,7 @@ public class AnswerViewUI : MonoBehaviour
 
     private string guid;
 
-    public void Initialize(Data.Question.Answer answer)
+    public void Initialize(Answer answer)
     {
         guid = answer.Guid;
         text.text = answer.Text;
