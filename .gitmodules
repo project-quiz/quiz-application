@@ -1,6 +1,6 @@
 [submodule "Assets/Scripts/Model"]
 	path = Assets/Scripts/Model
-	url = git@bitbucket.org:bgjinc/quiz-c-model.git
+	url = git@github.com:project-quiz/quiz-csharp-model.git
 [submodule "Assets/Utils"]
 	path = Assets/Utils
 	url = git@bitbucket.org:bgjinc/core.git
