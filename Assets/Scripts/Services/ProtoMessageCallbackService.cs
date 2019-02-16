@@ -1,4 +1,4 @@
-﻿using Model;
+﻿using Message;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using System;
@@ -46,6 +46,9 @@ public class ProtoMessageCallbackService : IService
             case ProtoTypeUrl.PlayerJoined:
                 SendMessage(PlayerJoined.Parser.ParseFrom(message.Value));
                 break;
+            case ProtoTypeUrl.GameJoined:
+                SendMessage(GameJoined.Parser.ParseFrom(message.Value));
+                break;
             default:
                 break;
         }
@@ -54,5 +57,6 @@ public class ProtoMessageCallbackService : IService
 
 public class ProtoTypeUrl
 {
-    public const string PlayerJoined = "model.PlayerJoined";
+    public const string PlayerJoined = "message.PlayerJoined";
+    public const string GameJoined = "message.GameJoined";
 }

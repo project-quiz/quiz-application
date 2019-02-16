@@ -1,4 +1,4 @@
-﻿using Model;
+﻿using Message;
 using Google.Protobuf.Collections;
 using System.Collections.Generic;
 using System.Linq;

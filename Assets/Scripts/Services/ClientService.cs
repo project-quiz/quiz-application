@@ -1,4 +1,4 @@
-﻿using Model;
+﻿using Message;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using System;

@@ -1,4 +1,4 @@
-﻿using Model;
+﻿using Message;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,6 +14,7 @@ public partial class SImpleMainFlow : MonoBehaviour
     [SerializeField] private GameObject disconnectedScreen;
     [SerializeField] private GameObject questionScreen;
     [SerializeField] private GameObject joinedScreen;
+    [SerializeField] private GameObject gameJoinedScreen;
 
     private ClientService clientService;
     private ProtoMessageCallbackService protoMessageCallbackService;
@@ -30,6 +31,7 @@ public partial class SImpleMainFlow : MonoBehaviour
         disconnectedScreen.SetActive(currentScreenState == ScreenStates.Disconnected);
         questionScreen.SetActive(currentScreenState == ScreenStates.Question);
         joinedScreen.SetActive(currentScreenState == ScreenStates.Joined);
+        gameJoinedScreen.SetActive(currentScreenState == ScreenStates.GameJoin);
     }
 
     protected void Awake()
@@ -38,6 +40,7 @@ public partial class SImpleMainFlow : MonoBehaviour
 
         protoMessageCallbackService = GlobalServiceLocator.Instance.Get<ProtoMessageCallbackService>();
         protoMessageCallbackService.Subscribe<PlayerJoined>(OnPlayerJoined);
+        protoMessageCallbackService.Subscribe<GameJoined>(OnGameJoined);
 
         clientService = GlobalServiceLocator.Instance.Get<ClientService>();
         clientService.ConnectedEvent += OnClientConnected;
@@ -56,6 +59,11 @@ public partial class SImpleMainFlow : MonoBehaviour
         Debug.Log("OnPlayerJoined 1");
 
         SwitchScreen(ScreenStates.Joined);
+    }
+
+    private void OnGameJoined(GameJoined gameJoined)
+    {
+        SwitchScreen(ScreenStates.GameJoin);
     }
 
     protected void OnGUI()

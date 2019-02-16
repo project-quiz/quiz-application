@@ -6,5 +6,6 @@
     Disconnected,
     Waiting,
     Question,
-    Joined
+    Joined,
+    GameJoin
 }
