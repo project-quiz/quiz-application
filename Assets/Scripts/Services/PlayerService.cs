@@ -1,21 +1,51 @@
 ﻿using Message;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerService : IService
 {
+    public Dictionary<string, Player> Players = new Dictionary<string, Player>();
     public Player LocalPlayer { get; private set; }
-    public string Nickname = "BlackSpider";
+    public string DefaultNickName = "Player";
+
+    private ClientService clientService;
 
     public PlayerService(ProtoMessageCallbackService protoMessages)
     {
-        protoMessages.Subscribe<PlayerJoined>(OnPlayerJoined);
+        protoMessages.Subscribe<ServerJoined>(OnServerJoined);
+        protoMessages.Subscribe<PlayersNickNameChanged>(OnNickNameChanged);
     }
 
-    private void OnPlayerJoined(PlayerJoined playerJoined)
+    public void UpdateNickName(string name)
     {
-        Debug.Log("OnPlayerJoined 2");
-        LocalPlayer = playerJoined.Player;
+        if(LocalPlayer != null)
+        {
+            LocalPlayer.Nickname = name;
+        }
+    }
+
+    private void OnNickNameChanged(PlayersNickNameChanged playersNickNameChanged)
+    {
+        if (IsLocalPlayer(playersNickNameChanged.Guid))
+        {
+
+        }
+    }
+
+    private void OnServerJoined(ServerJoined serverJoined)
+    {
+        LocalPlayer = serverJoined.Player;
+    }
+
+    private bool IsLocalPlayer(Player player)
+    {
+        return IsLocalPlayer(player?.Guid);
+    }
+
+    private bool IsLocalPlayer(string guid)
+    {
+        return LocalPlayer != null ? LocalPlayer?.Guid == guid : false;
     }
 }

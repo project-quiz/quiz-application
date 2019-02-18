@@ -31,6 +31,11 @@ public class GameService : IService
 
     private void OnGameJoined(GameJoined gameJoined)
     {
-        Debug.Log("HERE");
+        Debug.Log("OnGameJoined: " + gameJoined.GUID);
+
+        foreach (var player in gameJoined.Players)
+        {
+            Debug.Log($"OnGameJoined Player {player.Guid}: {player.Nickname}");
+        }
     }
 }

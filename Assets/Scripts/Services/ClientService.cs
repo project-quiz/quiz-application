@@ -97,10 +97,7 @@ public class ClientService : IService, IDisposable
 
     private void SentJoinMessage()
     {
-        PlayerJoin playerJoin = new PlayerJoin();
-        playerJoin.Nickname = GlobalServiceLocator.Instance.Get<PlayerService>().Nickname;
-
-        WriteAsync(playerJoin);
+        WriteAsync(new JoinServer());
     }
 
     private async void ListenAsync()
@@ -114,7 +111,7 @@ public class ClientService : IService, IDisposable
                 mainThreadService.SendToMainThread(() =>
                 {
                     BaseMessage baseMessage = BaseMessage.Parser.ParseFrom(bytes);
-                    protoMessageCallbackService.SendBaseMessage(baseMessage);
+                    protoMessageCallbackService.ReceiveBaseMessage(baseMessage);
                 });
             }
         }

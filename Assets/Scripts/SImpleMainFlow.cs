@@ -36,10 +36,10 @@ public partial class SImpleMainFlow : MonoBehaviour
 
     protected void Awake()
     {
-        SwitchScreen(ScreenStates.Start);
+        SwitchScreen(ScreenStates.Connecting);
 
         protoMessageCallbackService = GlobalServiceLocator.Instance.Get<ProtoMessageCallbackService>();
-        protoMessageCallbackService.Subscribe<PlayerJoined>(OnPlayerJoined);
+        protoMessageCallbackService.Subscribe<ServerJoined>(OnServerJoined);
         protoMessageCallbackService.Subscribe<GameJoined>(OnGameJoined);
 
         clientService = GlobalServiceLocator.Instance.Get<ClientService>();
@@ -54,7 +54,7 @@ public partial class SImpleMainFlow : MonoBehaviour
         clientService.Dispose();
     }
 
-    private void OnPlayerJoined(PlayerJoined playerJoined)
+    private void OnServerJoined(ServerJoined serverJoined)
     {
         Debug.Log("OnPlayerJoined 1");
 

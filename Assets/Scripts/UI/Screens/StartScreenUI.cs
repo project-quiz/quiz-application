@@ -19,7 +19,7 @@ public class StartScreenUI : MonoBehaviour
     {
         if(input.text.Length > 0)
         {
-            GlobalServiceLocator.Instance.Get<PlayerService>().Nickname = input.text;
+            GlobalServiceLocator.Instance.Get<PlayerService>().DefaultNickName = input.text;
         }
 
         FindObjectOfType<SImpleMainFlow>().SwitchScreen(ScreenStates.Connecting);
