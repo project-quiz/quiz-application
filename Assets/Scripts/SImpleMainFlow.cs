@@ -56,7 +56,7 @@ public partial class SImpleMainFlow : MonoBehaviour
 
     private void OnServerJoined(ServerJoined serverJoined)
     {
-        Debug.Log("OnPlayerJoined 1");
+        Debug.Log("OnServerJoined 1");
 
         SwitchScreen(ScreenStates.Joined);
     }
